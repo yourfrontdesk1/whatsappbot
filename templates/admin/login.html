@@ -1,0 +1,24 @@
+{% extends "admin/base.html" %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 80px auto;">
+    <div class="card">
+        <h2 style="text-align: center; margin-bottom: 20px;">WhatsApp Bot Admin</h2>
+        <form method="POST">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" required autofocus>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Log In</button>
+        </form>
+        <p style="text-align: center; margin-top: 15px; font-size: 13px; color: #888;">
+            First time? <a href="{{ url_for('admin.setup') }}">Set up your account</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

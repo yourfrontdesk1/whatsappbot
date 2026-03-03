@@ -1,0 +1,70 @@
+{% extends "admin/base.html" %}
+{% block title %}Services{% endblock %}
+
+{% block content %}
+<div class="page-actions">
+    <div class="page-header">
+        <h1>Services</h1>
+        <p>Services your business offers (shown to customers via the bot)</p>
+    </div>
+    <a href="{{ url_for('admin.add_service') }}" class="btn btn-primary">+ Add Service</a>
+</div>
+
+{% if not categories %}
+<div class="card" style="text-align: center; padding: 40px;">
+    <p style="color: #888;">No services added yet.</p>
+    <a href="{{ url_for('admin.add_service') }}" class="btn btn-primary" style="margin-top: 15px;">Add Your First Service</a>
+</div>
+{% else %}
+    {% for category, svcs in categories.items() %}
+    <div class="category-section">
+        <div class="category-header">{{ category }}</div>
+        <div class="card" style="padding: 0;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>Price</th>
+                        <th>Duration</th>
+                        <th>Bookable</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for svc in svcs %}
+                    <tr>
+                        <td>
+                            <strong>{{ svc.name }}</strong>
+                            {% if svc.description %}<br><small style="color:#888">{{ svc.description[:60] }}{{ '...' if svc.description|length > 60 else '' }}</small>{% endif %}
+                        </td>
+                        <td>
+                            {% if svc.price_from %}
+                                {% set sym = '£' if svc.currency == 'GBP' else ('€' if svc.currency == 'EUR' else '$') %}
+                                {% if svc.price_to and svc.price_from != svc.price_to %}
+                                    {{ sym }}{{ svc.price_from }} - {{ sym }}{{ svc.price_to }}
+                                {% else %}
+                                    {{ sym }}{{ svc.price_from }}
+                                {% endif %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ (svc.duration_minutes|string + ' min') if svc.duration_minutes else '-' }}</td>
+                        <td>{{ 'Yes' if svc.is_bookable else 'No' }}</td>
+                        <td><span class="badge {{ 'badge-active' if svc.is_active else 'badge-inactive' }}">{{ 'Active' if svc.is_active else 'Inactive' }}</span></td>
+                        <td class="actions">
+                            <a href="{{ url_for('admin.edit_service', service_id=svc.id) }}" class="btn btn-outline btn-sm">Edit</a>
+                            <form method="POST" action="{{ url_for('admin.delete_service', service_id=svc.id) }}" style="display:inline" onsubmit="return confirm('Delete this service?')">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+{% endif %}
+{% endblock %}

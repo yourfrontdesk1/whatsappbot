@@ -1,0 +1,62 @@
+{% extends "admin/base.html" %}
+{% block title %}Bookings{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Bookings</h1>
+    <p>Manage booking requests from WhatsApp customers</p>
+</div>
+
+<div style="margin-bottom: 20px; display: flex; gap: 8px;">
+    <a href="{{ url_for('admin.bookings') }}" class="btn {{ 'btn-primary' if not current_status else 'btn-outline' }} btn-sm">All</a>
+    <a href="{{ url_for('admin.bookings', status='pending') }}" class="btn {{ 'btn-primary' if current_status == 'pending' else 'btn-outline' }} btn-sm">Pending</a>
+    <a href="{{ url_for('admin.bookings', status='confirmed') }}" class="btn {{ 'btn-primary' if current_status == 'confirmed' else 'btn-outline' }} btn-sm">Confirmed</a>
+    <a href="{{ url_for('admin.bookings', status='cancelled') }}" class="btn {{ 'btn-primary' if current_status == 'cancelled' else 'btn-outline' }} btn-sm">Cancelled</a>
+</div>
+
+<div class="card" style="padding: 0;">
+    {% if bookings %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Phone</th>
+                <th>Customer</th>
+                <th>Service</th>
+                <th>Date / Time</th>
+                <th>Notes</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in bookings %}
+            <tr>
+                <td>{{ booking.phone_number }}</td>
+                <td>{{ booking.customer_name or '-' }}</td>
+                <td>{{ booking.service or '-' }}</td>
+                <td>{{ (booking.preferred_date or '-') + ' ' + (booking.preferred_time or '') }}</td>
+                <td style="max-width: 200px;">{{ booking.notes[:80] if booking.notes else '-' }}{{ '...' if booking.notes and booking.notes|length > 80 else '' }}</td>
+                <td><span class="badge badge-{{ booking.status }}">{{ booking.status }}</span></td>
+                <td class="actions">
+                    {% if booking.status == 'pending' %}
+                    <form method="POST" action="{{ url_for('admin.update_booking', booking_id=booking.id) }}" style="display:inline">
+                        <input type="hidden" name="status" value="confirmed">
+                        <button type="submit" class="btn btn-success btn-sm">Confirm</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('admin.update_booking', booking_id=booking.id) }}" style="display:inline">
+                        <input type="hidden" name="status" value="cancelled">
+                        <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="text-align: center; padding: 40px; color: #888;">
+        No bookings {{ 'with status "' + current_status + '"' if current_status else '' }} found.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

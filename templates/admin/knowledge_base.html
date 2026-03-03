@@ -1,0 +1,52 @@
+{% extends "admin/base.html" %}
+{% block title %}Knowledge Base{% endblock %}
+
+{% block content %}
+<div class="page-actions">
+    <div class="page-header">
+        <h1>Knowledge Base</h1>
+        <p>FAQs and information the bot uses to answer questions</p>
+    </div>
+    <a href="{{ url_for('admin.add_kb_entry') }}" class="btn btn-primary">+ Add Entry</a>
+</div>
+
+{% if not categories %}
+<div class="card" style="text-align: center; padding: 40px;">
+    <p style="color: #888;">No knowledge base entries yet.</p>
+    <a href="{{ url_for('admin.add_kb_entry') }}" class="btn btn-primary" style="margin-top: 15px;">Add Your First Entry</a>
+</div>
+{% else %}
+    {% for category, entries in categories.items() %}
+    <div class="category-section">
+        <div class="category-header">{{ category }}</div>
+        <div class="card" style="padding: 0;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Question</th>
+                        <th>Answer</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in entries %}
+                    <tr>
+                        <td style="max-width: 250px;">{{ entry.question }}</td>
+                        <td style="max-width: 350px;">{{ entry.answer[:100] }}{{ '...' if entry.answer|length > 100 else '' }}</td>
+                        <td><span class="badge {{ 'badge-active' if entry.is_active else 'badge-inactive' }}">{{ 'Active' if entry.is_active else 'Inactive' }}</span></td>
+                        <td class="actions">
+                            <a href="{{ url_for('admin.edit_kb_entry', entry_id=entry.id) }}" class="btn btn-outline btn-sm">Edit</a>
+                            <form method="POST" action="{{ url_for('admin.delete_kb_entry', entry_id=entry.id) }}" style="display:inline" onsubmit="return confirm('Delete this entry?')">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+{% endif %}
+{% endblock %}

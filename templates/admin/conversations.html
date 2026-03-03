@@ -1,0 +1,20 @@
+{% extends "admin/base.html" %}
+{% block title %}Conversations{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Conversations</h1>
+    <p>Overview of WhatsApp bot activity</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.total_messages }}</div>
+        <div class="stat-label">Total Messages</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.unique_users }}</div>
+        <div class="stat-label">Unique Users</div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Edit' if service else 'Add' }} Service{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ 'Edit' if service else 'Add' }} Service</h1>
+</div>
+
+<div class="card" style="max-width: 700px;">
+    <form method="POST">
+        <div class="form-group">
+            <label>Service Name</label>
+            <input type="text" name="name" value="{{ service.name if service else '' }}" required
+                   placeholder="e.g. Whole Body Cryotherapy">
+        </div>
+
+        <div class="form-group">
+            <label>Category</label>
+            <input type="text" name="category" value="{{ service.category if service else '' }}"
+                   placeholder="e.g. Wellness Spa, Gym & Fitness"
+                   list="service-categories">
+            <datalist id="service-categories">
+                <option value="Gym & Fitness">
+                <option value="Wellness Spa">
+                <option value="Facilities">
+                <option value="Classes">
+                <option value="Personal Training">
+            </datalist>
+        </div>
+
+        <div class="form-group">
+            <label>Description</label>
+            <textarea name="description" placeholder="Brief description of the service...">{{ service.description if service else '' }}</textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Price From</label>
+                <input type="number" step="0.01" name="price_from" value="{{ service.price_from if service and service.price_from else '' }}"
+                       placeholder="e.g. 40.00">
+            </div>
+            <div class="form-group">
+                <label>Price To</label>
+                <input type="number" step="0.01" name="price_to" value="{{ service.price_to if service and service.price_to else '' }}"
+                       placeholder="e.g. 70.00 (leave empty if fixed price)">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Currency</label>
+                <select name="currency">
+                    <option value="GBP" {{ 'selected' if not service or service.currency == 'GBP' else '' }}>GBP (£)</option>
+                    <option value="EUR" {{ 'selected' if service and service.currency == 'EUR' else '' }}>EUR (€)</option>
+                    <option value="USD" {{ 'selected' if service and service.currency == 'USD' else '' }}>USD ($)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Duration (minutes)</label>
+                <input type="number" name="duration_minutes" value="{{ service.duration_minutes if service and service.duration_minutes else '' }}"
+                       placeholder="e.g. 30">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="checkbox-group">
+                <input type="checkbox" name="is_bookable" id="is_bookable" {{ 'checked' if not service or service.is_bookable else '' }}>
+                <label for="is_bookable" style="margin-bottom: 0;">Can be booked via bot</label>
+            </div>
+        </div>
+
+        {% if service %}
+        <div class="form-group">
+            <div class="checkbox-group">
+                <input type="checkbox" name="is_active" id="is_active" {{ 'checked' if service.is_active else '' }}>
+                <label for="is_active" style="margin-bottom: 0;">Active</label>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="actions">
+            <button type="submit" class="btn btn-primary">{{ 'Update' if service else 'Add Service' }}</button>
+            <a href="{{ url_for('admin.services') }}" class="btn btn-outline">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

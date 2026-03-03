@@ -1,0 +1,60 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Edit' if entry else 'Add' }} Knowledge Base Entry{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ 'Edit' if entry else 'Add' }} Knowledge Base Entry</h1>
+</div>
+
+<div class="card" style="max-width: 700px;">
+    <form method="POST">
+        <div class="form-group">
+            <label>Category</label>
+            <input type="text" name="category" value="{{ entry.category if entry else '' }}" required
+                   placeholder="e.g. General, Pricing, Services, Facilities"
+                   list="category-suggestions">
+            <datalist id="category-suggestions">
+                <option value="General">
+                <option value="Pricing">
+                <option value="Services">
+                <option value="Facilities">
+                <option value="Policies">
+                <option value="Booking">
+            </datalist>
+            <span class="help-text">Group related entries together</span>
+        </div>
+
+        <div class="form-group">
+            <label>Question</label>
+            <input type="text" name="question" value="{{ entry.question if entry else '' }}" required
+                   placeholder="e.g. What are your opening hours?">
+        </div>
+
+        <div class="form-group">
+            <label>Answer</label>
+            <textarea name="answer" required placeholder="The answer the bot should give...">{{ entry.answer if entry else '' }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Keywords</label>
+            <input type="text" name="keywords" value="{{ entry.keywords|join(', ') if entry and entry.keywords else '' }}"
+                   placeholder="hours, open, close, time">
+            <span class="help-text">Comma-separated keywords to help match this entry to user questions</span>
+        </div>
+
+        {% if entry %}
+        <div class="form-group">
+            <div class="checkbox-group">
+                <input type="checkbox" name="is_active" id="is_active" {{ 'checked' if entry.is_active else '' }}>
+                <label for="is_active" style="margin-bottom: 0;">Active</label>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="actions">
+            <button type="submit" class="btn btn-primary">{{ 'Update' if entry else 'Add Entry' }}</button>
+            <a href="{{ url_for('admin.knowledge_base') }}" class="btn btn-outline">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

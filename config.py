@@ -16,3 +16,4 @@ SUPABASE_KEY = os.getenv('SUPABASE_KEY')
 # App
 FLASK_ENV = os.getenv('FLASK_ENV', 'production')
 PORT = int(os.getenv('PORT', 5000))
+SECRET_KEY = os.getenv('SECRET_KEY', 'change-me-in-production')

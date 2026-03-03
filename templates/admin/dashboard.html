@@ -1,0 +1,71 @@
+{% extends "admin/base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Dashboard</h1>
+    <p>{{ business.name if business else 'Your Business' }}</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.total_messages }}</div>
+        <div class="stat-label">Total Messages</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.unique_users }}</div>
+        <div class="stat-label">Unique Users</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ pending_bookings|length }}</div>
+        <div class="stat-label">Pending Bookings</div>
+    </div>
+</div>
+
+{% if pending_bookings %}
+<div class="card">
+    <h2>Recent Pending Bookings</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Phone</th>
+                <th>Service</th>
+                <th>Notes</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in pending_bookings %}
+            <tr>
+                <td>{{ booking.phone_number }}</td>
+                <td>{{ booking.service or '-' }}</td>
+                <td>{{ booking.notes[:50] if booking.notes else '-' }}{{ '...' if booking.notes and booking.notes|length > 50 else '' }}</td>
+                <td>{{ booking.created_at[:10] }}</td>
+                <td class="actions">
+                    <form method="POST" action="{{ url_for('admin.update_booking', booking_id=booking.id) }}" style="display:inline">
+                        <input type="hidden" name="status" value="confirmed">
+                        <button type="submit" class="btn btn-success btn-sm">Confirm</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('admin.update_booking', booking_id=booking.id) }}" style="display:inline">
+                        <input type="hidden" name="status" value="cancelled">
+                        <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<div class="card">
+    <h2>Quick Links</h2>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <a href="{{ url_for('admin.add_kb_entry') }}" class="btn btn-outline">+ Add FAQ</a>
+        <a href="{{ url_for('admin.add_service') }}" class="btn btn-outline">+ Add Service</a>
+        <a href="{{ url_for('admin.operating_hours') }}" class="btn btn-outline">Edit Hours</a>
+        <a href="{{ url_for('admin.settings') }}" class="btn btn-outline">Bot Settings</a>
+    </div>
+</div>
+{% endblock %}
